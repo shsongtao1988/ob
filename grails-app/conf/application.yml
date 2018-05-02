@@ -160,5 +160,8 @@ spring:
     host: 101.132.27.101
     database: 1
     port: 6379
-
+---
+wx_biz_corp: "wx0d88afc61f97e1c2"
+wx_biz_agentId: "1000002"
+wx_biz_secret: "VotYJddAbNHKUNr9fcWl1-idj9l2WF5VhDk6oINBCFs"
 
