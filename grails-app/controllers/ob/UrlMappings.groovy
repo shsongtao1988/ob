@@ -16,6 +16,9 @@ class UrlMappings {
         '/api/dw/wechat'(controller: 'wechatOauth',action: 'wechat')
         '/all/debt/testToken'(controller: 'debt',action: 'testToken')
         '/all/debt/testOb'(controller: 'debt',action: 'tObserver')
+        '/wxBiz/echo'(controller: "wxBiz"){
+            action = [ GET:"echo", POST:"msgRecieve" ]  //echo是验证url  msgRecieve是消息接收
+        }
 
         "/"(view:"/index")
         "500"(view:'/error')

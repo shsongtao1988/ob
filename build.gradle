@@ -2,7 +2,7 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
-        maven { url "http://61.129.70.63:8100/nexus/content/repositories/jcenter" }
+        maven { url "http://10.20.100.228:8100/nexus/content/repositories/jcenter" }
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
@@ -49,6 +49,7 @@ dependencies {
     compile "org.mongodb:mongodb-driver:3.4.2"
     compile "org.grails:grails-datastore-gorm-mongodb:6.1.2.RELEASE"
 
+    compile 'org.grails:grails-datastore-rest-client:5.0.0.RC2'
     compile "org.grails:grails-dependencies"
     compile "org.grails:grails-web-boot"
     compile "org.grails.plugins:cache"
