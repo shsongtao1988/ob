@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微信首页</title>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style>
+        p{
+            margin-bottom: 10em;
+        }
+        a{
+            border: 1px solid #ddd;
+            border-radius: 1em;
+            padding: 1em 1em;
+            font-size: 3em;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="javascript:;">获取Token</a></p>
+    <p><a href="javascript:;">获取ticket</a></p>
+    <p><a href="javascript:;" onclick="selectImage()">选择</a></p>
+    <p><a href="javascript:;" onclick="uploadImage()">上传</a></p>
+    <br/>
+    <br/>
+    <p><a href="javascript:;" onclick="getLocation()">获取当前位置</a></p>
+    <br/>
+    <br/>
+
+    <p><a href="/wx/asset.html">抵押物</a></p>
+    <p><a href="/wx/company.html">公司</a></p>
+    <p><a href="/wx/debt.html">债权</a></p>
+
+    <script type="text/javascript">
+        var curUrl = location.href.split("#")[0];
+        $.get("http://www.songtao.shop/wxJsapi/getWxConfig?url="+curUrl,function (conf) {
+            console.log(conf)
+            conf.jsApiList = ["getLocalImgData","chooseImage","previewImage","uploadImage","openLocation"]
+            wx.config(conf)
+        });
+
+        wx.ready(function () {
+
+        })
+
+        wx.error(function (msg) {
+//            alert(msg)
+        });
+
+        var localImgIds = [];
+        var index = 0;
+        var severIds = [];
+        function selectImage() {
+            localImgIds = [];
+            index = 0;
+            wx.chooseImage({
+                count: 9, // 默认9
+                sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                success: function (res) {
+                    localImgIds = res.localIds;
+                    // var localIds = res.localIds; // 返回选定照片的本地ID列表，
+                    // andriod中localId可以作为img标签的src属性显示图片；
+                    // 而在IOS中需通过上面的接口getLocalImgData获取图片base64数据，从而用于img标签的显示
+                }
+            });
+        }
+
+        function uploadImage(){
+            if(localImgIds.length==0){
+                return
+            }
+            uploadSigleImage();
+        }
+
+        function uploadSigleImage(){
+            var imgId = localImgIds[index].toString();
+            wx.uploadImage({
+                localId: imgId, // 需要上传的图片的本地ID，由chooseImage接口获得
+                isShowProgressTips: 1, // 默认为1，显示进度提示
+                success: function (res) {
+                    var serverId = res.serverId; // 返回图片的服务器端ID
+                    severIds.push(serverId);
+                    index++;
+                    if(localImgIds.length > index){
+                        uploadSigleImage()
+                    }else{//全部传完了 将返回的数据 发送到服务器
+                        severIds = [];
+                        index = 0;
+                        serverInfos(severIds);
+                    }
+                }
+            });
+        }
+
+        function serverInfos(obj) {
+            $.get("http://www.songtao.shop/wxJsapi/recievePicServerIds?serverIds="+obj.toString(),function (msg) {
+                console.log(msg);
+                obj = [];
+            })
+        }
+        
+        function getLocation() {
+            wx.getLocation({
+                type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                success: function (res) {
+                    var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                    var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                    var speed = res.speed; // 速度，以米/每秒计
+                    var accuracy = res.accuracy; // 位置精度
+                    alert("latitude:"+latitude+"  longitude:"+longitude)
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
