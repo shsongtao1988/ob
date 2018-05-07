@@ -11,7 +11,7 @@ class WxJsapiService {
     Date expire_date = new Date()
 
     String getTicket(){
-        if(js_ticket !=null && expire_date.getTime()<(new Date().getTime()+30*60*1000)){//提前版小时失效
+        if(js_ticket !=null && expire_date.getTime()>(new Date().getTime()+30*60*1000)){//提前版小时失效
             return js_ticket
         }
         return fromWxGetTicket()

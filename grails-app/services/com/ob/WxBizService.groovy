@@ -56,7 +56,7 @@ class WxBizService {
      * @return
      */
     String getAccessToken(){//单例模式 获取accessToken  加时间判断的  如果微信方面导致失效42001错误 就调用getToken
-        if(access_token != null && expire_date.getTime()<(new Date().getTime()+30*60*1000)){//提前版小时失效
+        if(access_token != null && expire_date.getTime()>(new Date().getTime()+30*60*1000)){//提前半小时失效
             return access_token
         }
         return getToken()
@@ -266,6 +266,28 @@ class WxBizService {
     }
     def deleteDepart(Node xml){
         //想写就写
+    }
+
+    def getFromUserCode(String code){
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token="+getAccessToken()+"&code="+code
+        def rest = new RestBuilder()
+        def resp = rest.get(url)
+        def json = resp.json
+        if(json.errmsg != "ok"){
+            log.error(json.errmsg)
+            throw new RuntimeException(json.errmsg)
+        }
+        if(json.UserId){
+            def user = User.findByUsername(json.UserId)
+            return user
+        }
+        if(json.OpenId){//要不要在第三方登录中显示这个呢??
+
+        }
+        return  null
+    }
+    def genSysTokenFromUser(User user){
+        return "ThisIsMySystemTokenAndEveryOneCanUse"
     }
 
 }

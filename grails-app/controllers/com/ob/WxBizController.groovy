@@ -1,9 +1,7 @@
 package com.ob
 
 import com.ob.user.User
-import com.ws.wx.WXBizMsgCrypt
 import grails.rest.RestfulController
-import org.springframework.beans.factory.annotation.Value
 
 
 class WxBizController extends RestfulController{
@@ -11,15 +9,7 @@ class WxBizController extends RestfulController{
     WxBizController(){
         super(WxBiz)
     }
-//    @Value('${wx_biz_corp}')
-//    String wx_biz_corp
-//    @Value('${wx_biz_agentId}')
-//    String wx_biz_agentId
-//    @Value('${wx_biz_secret}')
-//    String wx_biz_secret
-//    String token = "jlc5OtLEU8uV1eydMnSr4"  //验证的token
-//    String encoding_aes_key = "ceOEli095X0f8oO5oZoeF2EwtdnVP5DYTmGmfP2jsjj"
-
+    static responseFormats = ['json','xml']
     def wxBizService
 
     def echo(){
@@ -59,6 +49,21 @@ class WxBizController extends RestfulController{
         String postData = buffer.toString();
         wxBizService.reciveMsg(msg_signature,timestamp,nonce,postData)
         render "OK"
+    }
+
+    def wxQyLogin(){
+        def code = params.code
+        println code
+        String token = "1233";
+        try {
+            def user = wxBizService.getFromUserCode(code)
+            token = wxBizService.genSysTokenFromUser(user)
+        }catch (Exception e){
+            response.status = 400
+            render "error"
+            return
+        }
+        render token
     }
 
 }
